@@ -18,12 +18,12 @@ export const usersTable = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => ({
-    userNameLengthCheck: check(
+  (table) => [
+    check(
       "user_name_length_check",
       sql`length(${table.userName}) >= 6 AND length(${table.userName}) <= 50`,
     ),
-  }),
+  ],
 );
 
 export type User = InferSelectModel<typeof usersTable>;

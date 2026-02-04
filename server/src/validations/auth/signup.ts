@@ -20,7 +20,7 @@ export const validateSignupData = z
   })
   .strict();
 
-export type SignupValidationSchema = z.infer<typeof signupValidation>;
+export type SignupValidationSchema = z.infer<typeof validateSignupData>;
 
 export default function signupValidation(payload: unknown) {
   const result = validateSignupData.safeParse(payload);
