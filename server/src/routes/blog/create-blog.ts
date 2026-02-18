@@ -3,12 +3,12 @@ import createBlogController from "../../controllers/blogs/create-blog";
 import authMiddleware from "../../middlewares/auth";
 import { asyncHandler } from "../../utils/async-handler.js";
 
-const createBlogsRoute: Router = Router();
+const createBlogRoute: Router = Router();
 
-createBlogsRoute.post(
+createBlogRoute.post(
   "/create",
   authMiddleware,
   asyncHandler(createBlogController),
 );
 
-export default createBlogsRoute;
+export default createBlogRoute;
