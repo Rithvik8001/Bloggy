@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 import authRoute from "./routes/auth/index.js";
 import blogRoute from "./routes/blog/index.js";
 import cors from "cors";
+import profileRoute from "./routes/profile/index.js";
 
 // cors
 app.use(
@@ -27,6 +28,7 @@ app.use(
 // routes
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/blogs", blogRoute);
+app.use("/api/v1/profile", profileRoute);
 
 // json parser
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
