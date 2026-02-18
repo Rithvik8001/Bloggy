@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express, { Express, Request, Response, NextFunction } from "express";
+import cookieParser from "cookie-parser";
 import { checkDatabaseConnection } from "./db/config/connection.js";
 import errorHandler from "./middlewares/error-handler.js";
 
@@ -9,6 +10,7 @@ const PORT = process.env.PORT;
 // middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 import authRoute from "./routes/auth/index.js";
 import blogRoute from "./routes/blog/index.js";
