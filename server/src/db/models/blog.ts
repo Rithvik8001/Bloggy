@@ -1,7 +1,9 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { randomUUID } from "node:crypto";
 import { usersTable } from "./user";
-import { InferSelectModel } from "drizzle-orm";
+import { InferSelectModel, relations } from "drizzle-orm";
+
+// one to many relationship between users and blogs
 
 export const blogsTable = sqliteTable("blogs", {
   id: text("id")

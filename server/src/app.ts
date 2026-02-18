@@ -26,7 +26,7 @@ app.use(
 
 // routes
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/blog", blogRoute);
+app.use("/api/v1/blogs", blogRoute);
 
 // json parser
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
