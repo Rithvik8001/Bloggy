@@ -5,20 +5,22 @@ import { usersTable } from "../../db/models";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import jwt, { Secret } from "jsonwebtoken";
+import {
+  BadRequestError,
+  InternalServerError,
+  ValidationError,
+} from "../../errors/index.js";
 
 export default async function loginController(req: Request, res: Response) {
   const result = loginValidation(req.body);
 
   if (!result.success) {
-    return res.status(400).json({
-      error: "Validation failed",
-      details: result.error.issues,
-    });
+    throw new ValidationError("Validation failed", result.error.issues);
   }
 
   const { email, password } = result.data;
+
   try {
-    // check if user exists
     const user = await db
       .select()
       .from(usersTable)
@@ -26,17 +28,12 @@ export default async function loginController(req: Request, res: Response) {
       .limit(1);
 
     if (user.length === 0) {
-      return res.status(400).json({
-        error: "User not found",
-      });
+      throw new BadRequestError("User not found");
     }
 
-    // compare the password
     const isPasswordValid = await bcrypt.compare(password, user[0].password);
     if (!isPasswordValid) {
-      return res.status(400).json({
-        error: "Invalid password",
-      });
+      throw new BadRequestError("Invalid password");
     }
 
     const payload = {
@@ -46,7 +43,9 @@ export default async function loginController(req: Request, res: Response) {
 
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
-      throw new Error("JWT_SECRET environment variable is not set");
+      throw new InternalServerError(
+        "JWT_SECRET environment variable is not set",
+      );
     }
 
     const token = jwt.sign(payload, jwtSecret as Secret, {
@@ -63,14 +62,13 @@ export default async function loginController(req: Request, res: Response) {
       message: "Login successful.",
     });
   } catch (error) {
+    if (
+      error instanceof BadRequestError ||
+      error instanceof InternalServerError
+    ) {
+      throw error;
+    }
     console.error("Login error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return res.status(500).json({
-      error: "Internal server error",
-      message: "Failed to login",
-      details:
-        process.env.NODE_ENV === "development" ? errorMessage : undefined,
-    });
+    throw new InternalServerError("Failed to login");
   }
 }

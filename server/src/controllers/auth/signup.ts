@@ -5,33 +5,33 @@ import { usersTable } from "../../db/models/user";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { formatUserDates } from "../../utils/user";
+import {
+  BadRequestError,
+  InternalServerError,
+  ValidationError,
+} from "../../errors/index.js";
 
 export default async function signupController(req: Request, res: Response) {
   const result = signupValidation(req.body);
   if (!result.success) {
-    return res.status(400).json({
-      error: "Validation failed",
-      details: result.error.issues,
-    });
+    throw new ValidationError("Validation failed", result.error.issues);
   }
 
   const { userName, email, password } = result.data;
 
+  const existingUser = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+    .limit(1);
+
+  if (existingUser.length > 0) {
+    throw new BadRequestError(
+      "User already exists, please try a different email or login instead",
+    );
+  }
+
   try {
-    // check if the user already exists
-    const existingUser = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.email, email))
-      .limit(1);
-
-    if (existingUser.length > 0) {
-      return res.status(400).json({
-        error:
-          "User already exists, please try a different email or login instead",
-      });
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [newUser] = await db
@@ -55,9 +55,6 @@ export default async function signupController(req: Request, res: Response) {
     });
   } catch (error) {
     console.error("Signup error:", error);
-    return res.status(500).json({
-      error: "Internal server error",
-      message: "Failed to create user",
-    });
+    throw new InternalServerError("Failed to create user");
   }
 }
