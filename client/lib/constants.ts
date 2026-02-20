@@ -1,7 +1,7 @@
 import type { NavItem, FeatureData, StepData } from "@/types";
 
 export const APP_NAME = "Bloggy" as const;
-
+export const SERVER_URL = process.env.SERVER_URL as string;
 export const APP_TAGLINE = "Write what matters." as const;
 
 export const APP_DESCRIPTION =

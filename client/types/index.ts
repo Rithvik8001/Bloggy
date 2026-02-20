@@ -16,3 +16,20 @@ export type StepData = {
   readonly title: string;
   readonly description: string;
 };
+
+export type SignUpPayload = {
+  userName: string;
+  email: string;
+  password: string;
+};
+
+export type SignUpResponse = {
+  message: string;
+  user: {
+    id: string;
+    userName: string;
+    email: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+};

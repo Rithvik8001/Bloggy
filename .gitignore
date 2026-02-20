@@ -5,3 +5,4 @@ bloggy.db
 
 # SQLite databases
 *.db
+.claude/
